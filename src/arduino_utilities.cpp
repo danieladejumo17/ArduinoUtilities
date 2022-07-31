@@ -25,3 +25,31 @@ void logfatal(const String& info)
 {
   Serial.println(String("FATAL: ") + info);
 }
+
+
+// ----------- JSON HANDLING ------------
+template <typename Callback>
+void deserializeJSON(const String &json, Callback callback)
+{
+    DynamicJsonBuffer jsonBuffer(JSON_ARRAY_SIZE(2) + JSON_OBJECT_SIZE(3) + json.length());
+    JsonObject& root = jsonBuffer.parseObject(json);
+    if (!root.success())
+    {
+        logerr("Failed to parse JSON");
+        return;
+    }
+    callback(root);
+}
+
+String serializeJSON(const JsonObject &json)
+{
+    String result;
+    json.printTo(result);
+    return result;
+}
+
+template <typename Callback>
+void serializeJSON(const JsonObject &json, Callback callback)
+{
+    callback(serializeJSON(json));
+}
